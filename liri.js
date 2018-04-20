@@ -26,18 +26,13 @@ for (var i = index; i < ops.length; i++) {
   }
 switch(operator){
     case "my-tweets":
-        //console.log(operator);
         myTweets();
-        //console.log(result);
         break;
     case "spotify-this-song":
-        //console.log(operator);
         spotify();
-        //console.log(result);
         break;
     case "movie-this":
         omdb();
-        //console.log(result);
         break;
     case "do-what-it-says":
         doit();
@@ -95,14 +90,25 @@ var spotify = new Spotify({
   secret: process.env.SPOTIFY_SECRET
 });
  
-spotify.search({ type: 'track', query: operator2, limit : '1' }, function(err, data) {
+spotify.search({ type: 'track', query: operator2, limit : '5' }, function(err, data) {
   if (err) {
     return console.log('Error occurred: ' + err);
   }
  
+// var limit;
+// if (data.tracks.items.length  = 5){
+//      limit = 5;
+// }
+// else{
+//     limit = data.tracks.items.length ;
+// }   
 
-//console.log(JSON.stringify(data, null, 2));
+//console.log(data.tracks.items + '\n'+'\n');
 
+
+// // for(let a = 0; a<limit; a++){
+
+if(data.tracks.items[0].name.length > 0){
 console.log('\n'+"Song: ",data.tracks.items[0].name);
 
 console.log("Artist: ",data.tracks.items[0].artists[0].name);
@@ -110,8 +116,14 @@ console.log("Artist: ",data.tracks.items[0].artists[0].name);
 console.log("Listen on Spotify: ", data.tracks.items[0].external_urls['spotify']);
 
 console.log("Album:", data.tracks.items[0].album.name+'\n');
+}
+else{
+    console.log('"The Sign" by Ace of Base');
+}
 
-//console.log(JSON.stringify(data.tracks.items.album.artists.name,null, 2));
+
+// }
+
 });
 }
 
@@ -130,14 +142,14 @@ request(queryUrl, function(error, response, body) {
 // If the request is successful
  if (!error && response.statusCode === 200) {
 
-    //console.log(JSON.parse(body));
-
 
     console.log("Movie Title: " + JSON.parse(body).Title+ '\n');
 
     console.log("Release Year: " + JSON.parse(body).Year+ '\n');
 
-    console.log("The movie's Ratings (IMDB): " + JSON.parse(body).imdbRating+ '\n');
+    console.log("The movie's Ratings (IMDB): " + JSON.parse(body).Ratings[0]['Value']+ '\n');
+
+    console.log("The movie's Ratings (Rotten Tomatoes): " + JSON.parse(body).Ratings[1]['Value']+ '\n');
 
     console.log("Movie Plot: " + JSON.parse(body).Plot+ '\n');
 
@@ -147,17 +159,12 @@ request(queryUrl, function(error, response, body) {
 
     console.log("Movie's Languages: " + JSON.parse(body).Language+ '\n');
   }
+  else{
+      console.log("If you haven't watched 'Mr. Nobody,' then you should: http://www.imdb.com/title/tt0485947" + '\n' +
+                   "It's on Netflix!");
+  }
 });
 }
-
-// * Title of the movie.
-// * Year the movie came out.
-// * IMDB Rating of the movie.
-// * Rotten Tomatoes Rating of the movie.
-// * Country where the movie was produced.
-// * Language of the movie.
-// * Plot of the movie.
-// * Actors in the movie.
 
 function doit() {
     console.log("Do it called");
@@ -176,8 +183,7 @@ function doit() {
         // Then split it by commas (to make it more readable)
         var dataArr = data.split(",");
       
-        // We will then re-display the content as an array for later use.
-        console.log(dataArr);
+        //console.log(dataArr);
 
         operator = dataArr[0];
         operator2 = "";
