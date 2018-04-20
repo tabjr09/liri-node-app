@@ -1,16 +1,18 @@
 
 require("dotenv").config();
 
-
+let args = process.argv;
 let operator = process.argv[2];
-//let operator2 = process.argv[3];
 let operator2 = "";
 
-var ops = process.argv;
 
-for (var i = 3; i < ops.length; i++) {
+processRequest(args,3);
 
-    if (i > 3 && i < ops.length) {
+function processRequest(ops, index){
+
+for (var i = index; i < ops.length; i++) {
+
+    if (i > index && i < ops.length) {
   
       operator2 = operator2 + "+" + ops[i];
   
@@ -38,8 +40,10 @@ switch(operator){
         //console.log(result);
         break;
     case "do-what-it-says":
+        doit();
     default:
         console.log(process.argv[2]);
+}
 }
 
 
@@ -78,11 +82,11 @@ else{
   }
 });
 
-
 }
 
 function spotify(){
     //console.log("Spotify called");
+    //console.log(operator2)
 
     var Spotify = require('node-spotify-api');
  
@@ -97,34 +101,26 @@ spotify.search({ type: 'track', query: operator2, limit : '1' }, function(err, d
   }
  
 
-//   * Artist(s)
-     
-//   * The song's name
-  
-//   * A preview link of the song from Spotify
-  
-//   * The album that the song is from
-console.log("Song: ",data.tracks.items[0].name);
+//console.log(JSON.stringify(data, null, 2));
+
+console.log('\n'+"Song: ",data.tracks.items[0].name);
 
 console.log("Artist: ",data.tracks.items[0].artists[0].name);
 
 console.log("Listen on Spotify: ", data.tracks.items[0].external_urls['spotify']);
 
-console.log("Album:", data.tracks.items[0].album.name);
+console.log("Album:", data.tracks.items[0].album.name+'\n');
 
 //console.log(JSON.stringify(data.tracks.items.album.artists.name,null, 2));
 });
 }
 
 function omdb(){
-    console.log("Omdb called");
-
 
 // Then run a request to the OMDB API with the movie specified
 var queryUrl = "http://www.omdbapi.com/?t=" + operator2 + "&y=&plot=short&apikey=de0a7d62";
 
-// This line is just to help us debug against the actual URL.
-console.log(queryUrl);
+//console.log(queryUrl);
 
 var request = require("request");
 
@@ -134,14 +130,59 @@ request(queryUrl, function(error, response, body) {
 // If the request is successful
  if (!error && response.statusCode === 200) {
 
-    console.log("The movie's Release Year is: " + JSON.parse(body).Year);
+    //console.log(JSON.parse(body));
 
-    console.log("Movie Plot " + JSON.parse(body).Plot);
+
+    console.log("Movie Title: " + JSON.parse(body).Title+ '\n');
+
+    console.log("Release Year: " + JSON.parse(body).Year+ '\n');
+
+    console.log("The movie's Ratings (IMDB): " + JSON.parse(body).imdbRating+ '\n');
+
+    console.log("Movie Plot: " + JSON.parse(body).Plot+ '\n');
+
+    console.log("Actors: " + JSON.parse(body).Actors+ '\n');
+
+    console.log("Country: " + JSON.parse(body).Country+ '\n');
+
+    console.log("Movie's Languages: " + JSON.parse(body).Language+ '\n');
   }
 });
 }
 
+// * Title of the movie.
+// * Year the movie came out.
+// * IMDB Rating of the movie.
+// * Rotten Tomatoes Rating of the movie.
+// * Country where the movie was produced.
+// * Language of the movie.
+// * Plot of the movie.
+// * Actors in the movie.
+
 function doit() {
     console.log("Do it called");
-}
 
+    var fs = require('fs');
+
+    fs.readFile("random.txt", "utf8", function(error, data) {
+
+        // If the code experiences any errors it will log the error to the console.
+        if (error) {
+          return console.log(error);
+        }
+      
+        console.log(data);
+      
+        // Then split it by commas (to make it more readable)
+        var dataArr = data.split(",");
+      
+        // We will then re-display the content as an array for later use.
+        console.log(dataArr);
+
+        operator = dataArr[0];
+        operator2 = "";
+
+        processRequest(dataArr,1);
+      
+      });
+}
